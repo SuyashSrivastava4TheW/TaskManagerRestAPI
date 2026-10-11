@@ -2,8 +2,12 @@ package com.taskmanager.taskmanager.auth;
 
 
 import com.taskmanager.taskmanager.dto.LoginRequest;
+import com.taskmanager.taskmanager.dto.UserRequest;
+import com.taskmanager.taskmanager.dto.UserResponse;
 import com.taskmanager.taskmanager.user.User;
 import com.taskmanager.taskmanager.user.UserRepository;
+import com.taskmanager.taskmanager.user.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,5 +42,12 @@ public class AuthController {
         Map<String,String> map = new HashMap<>();
         map.put("Token",token);
         return map;
+    }
+    @Autowired
+    private UserService userService;
+
+    @PostMapping("/register")
+    public UserResponse register(@Valid @RequestBody UserRequest request) {
+        return userService.createUser(request);
     }
 }
