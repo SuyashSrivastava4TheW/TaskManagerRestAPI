@@ -3,8 +3,11 @@ package com.taskmanager.taskmanager.task;
 import com.taskmanager.taskmanager.dto.TaskRequest;
 import com.taskmanager.taskmanager.dto.TaskResponse;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @RestController
@@ -18,8 +21,8 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<TaskResponse> getAllTasks() {
-        return taskService.getAllTasks();
+    public Page<TaskResponse> getAllTasks(@RequestParam(required = false) Boolean completed, @ParameterObject Pageable pageable) {
+        return taskService.getAllTasks(completed,pageable);
     }
 
     @PostMapping
