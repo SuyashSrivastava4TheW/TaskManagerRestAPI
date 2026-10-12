@@ -7,10 +7,12 @@ import com.taskmanager.taskmanager.dto.TaskRequest;
 import com.taskmanager.taskmanager.dto.TaskResponse;
 import com.taskmanager.taskmanager.user.User;
 import com.taskmanager.taskmanager.user.UserRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Service
@@ -23,16 +25,21 @@ public class TaskService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    public List<TaskResponse> getAllTasks() {
+    public Page<TaskResponse> getAllTasks(Boolean completed, Pageable pageable){
         User user = getAuthenticatedUser();
-        List<Task> tasks = taskRepository.findByUser(user);
-        return tasks.stream().map(task -> new TaskResponse(
+        Page<Task> tasks;
+        if(completed == null){
+            tasks = taskRepository.findByUser(user, pageable);
+        }else{
+            tasks = taskRepository.findByUserAndCompleted(user,completed,pageable);
+        }
+        return tasks.map(task -> new TaskResponse(
                 task.getId(),
                 task.getTitle(),
                 task.getCompleted(),
                 task.getCategory() != null ? task.getCategory().getId() : null,
                 task.getCategory() != null ? task.getCategory().getName() : null
-        )).toList();
+        ));
     }
 
     public TaskResponse createTask(TaskRequest request) {
